@@ -12,13 +12,13 @@
             --font-score: 'Orbitron', sans-serif;
             --card-radius: 14px;
             --score-size: 80px;
-            --name-size: 29px;
+            --name-size: 34px;
         }
         body[data-theme="pixel"] {
             --font-score: 'Press Start 2P', 'Pretendard Variable', sans-serif;
             --card-radius: 24px;
             --score-size: 40px;
-            --name-size: 19px;
+            --name-size: 22px;
         }
 
         * { box-sizing: border-box; }
@@ -53,6 +53,7 @@
             transition: box-shadow 0.3s ease;
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
+            will-change: transform;
         }
         .team-card::before {
             content: '';
@@ -156,10 +157,21 @@
         let teams = [];
 
         function render() {
+            const previousCards = Array.from(scoreboardEl.querySelectorAll('.team-card'));
+            const previousPositions = new Map();
+            const previousRanks = new Map();
+            previousCards.forEach(card => {
+                previousPositions.set(card.dataset.teamId, card.getBoundingClientRect());
+                previousRanks.set(card.dataset.teamId, Number(card.dataset.rankIndex));
+            });
+
             scoreboardEl.innerHTML = '';
-            teams.forEach(team => {
+            const renderedCards = [];
+            teams.forEach((team, index) => {
                 const card = document.createElement('div');
                 card.className = 'team-card';
+                card.dataset.teamId = String(team.id);
+                card.dataset.rankIndex = String(index);
                 card.style.setProperty('--team-color', team.color);
 
                 card.innerHTML = `
@@ -173,6 +185,27 @@
                     </div>
                 `;
                 scoreboardEl.appendChild(card);
+                renderedCards.push(card);
+            });
+
+            renderedCards.forEach(card => {
+                const teamId = card.dataset.teamId;
+                const oldPosition = previousPositions.get(teamId);
+                const oldRank = previousRanks.get(teamId);
+                const newRank = Number(card.dataset.rankIndex);
+                if (!oldPosition || oldRank === newRank) return;
+
+                const newPosition = card.getBoundingClientRect();
+                const deltaX = oldPosition.left - newPosition.left;
+                const deltaY = oldPosition.top - newPosition.top;
+                card.animate([
+                    { transform: `translate(${deltaX}px, ${deltaY}px)`, zIndex: 10 },
+                    { transform: 'translate(0, 0)', zIndex: 10 }
+                ], {
+                    duration: 700,
+                    easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                    fill: 'none'
+                });
             });
         }
 
