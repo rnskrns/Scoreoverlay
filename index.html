@@ -80,6 +80,7 @@
         .login-card p { margin: 0 0 22px; color: var(--text-dim); line-height: 1.55; }
         .login-row { display: flex; gap: 10px; }
         .login-row input { flex: 1; min-width: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--panel-alt); color: var(--text); font-size: 16px; }
+        .login-row .password-field { -webkit-text-security: disc; }
         .login-row button { padding: 12px 20px; background: var(--accent); color: var(--accent-text); }
         .login-error { min-height: 20px; margin-top: 12px; color: var(--danger); font-size: 13px; }
         .session-name { color: var(--text-dim); font-size: 13px; }
@@ -291,7 +292,7 @@
             <h1>스코어 컨트롤러</h1>
             <p>등록된 경기 비밀번호를 입력하세요. 비밀번호마다 서로 다른 스코어가 열립니다.</p>
             <form class="login-row" id="loginForm">
-                <input type="password" id="passwordInput" placeholder="비밀번호" autocomplete="current-password" required>
+                <input type="text" class="password-field" id="passwordInput" placeholder="시트 이름" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" required>
                 <button type="submit" id="loginButton">입장</button>
             </form>
             <div class="login-error" id="loginError"></div>
@@ -344,6 +345,16 @@
         const loginForm = document.getElementById('loginForm');
         const loginError = document.getElementById('loginError');
         const loginButton = document.getElementById('loginButton');
+        const passwordInput = document.getElementById('passwordInput');
+        let isComposingPassword = false;
+
+        passwordInput.addEventListener('compositionstart', () => { isComposingPassword = true; });
+        passwordInput.addEventListener('compositionend', () => { isComposingPassword = false; });
+        passwordInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && (event.isComposing || isComposingPassword || event.keyCode === 229)) {
+                event.preventDefault();
+            }
+        });
 
         async function api(payload) {
             const response = await fetch(WEB_APP_URL, {
@@ -364,11 +375,12 @@
 
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
+            if (isComposingPassword) return;
             loginError.textContent = '';
             loginButton.disabled = true;
             loginButton.textContent = '확인 중...';
             try {
-                const result = await api({ action: 'login', password: document.getElementById('passwordInput').value });
+                const result = await api({ action: 'login', password: passwordInput.value.normalize('NFC') });
                 sessionToken = result.token;
                 scoreSheet = result.sheet;
                 teamsData = Array.isArray(result.teams) && result.teams.length ? result.teams : teamsData;
