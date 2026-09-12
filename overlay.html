@@ -22,7 +22,7 @@
         }
         body[data-theme="minecraft"] {
             --font-score: 'Press Start 2P', 'Pretendard Variable', sans-serif;
-            --card-radius: 0px;
+            --card-radius: 16px;
             --score-size: 65px;
             --name-size: 31px;
         }
@@ -87,29 +87,41 @@
 
         /* Design 3: Minecraft tournament-inspired block HUD */
         body[data-theme="minecraft"] .team-card {
-            background-color: rgba(48, 54, 58, 0.97);
+            background-color: rgba(72, 56, 48, 0.97);
             background-image:
                 linear-gradient(90deg, rgba(255,255,255,0.035) 50%, transparent 50%),
                 linear-gradient(rgba(255,255,255,0.025) 50%, transparent 50%),
                 linear-gradient(135deg, rgba(255,255,255,0.055) 25%, transparent 25% 75%, rgba(0,0,0,0.08) 75%);
             background-size: 16px 16px, 16px 16px, 32px 32px;
-            color: #f5f7f2;
-            border: 4px solid #171a1c;
-            outline: 3px solid rgba(106, 116, 121, 0.92);
-            outline-offset: -7px;
+            color: #fff4dc;
+            border: 4px solid #715743;
+            outline: none;
             box-shadow:
-                8px 8px 0 rgba(0,0,0,0.5),
-                inset 0 0 0 2px rgba(255,255,255,0.08);
+                6px 6px 0 rgba(39,30,25,0.48),
+                inset 0 0 0 2px #b59570;
             width: 320px;
-            padding: 32px 27px 25px;
+            padding: 38px 23px 29px;
             image-rendering: pixelated;
         }
         body[data-theme="minecraft"] .team-card::before {
             display: block;
-            top: 4px; left: 4px; right: 4px;
-            height: 10px;
+            top: 0; left: 0; right: 0;
+            height: 20px;
+            background:
+                repeating-linear-gradient(90deg, transparent 0 20px, rgba(255,255,255,0.18) 20px 28px, transparent 28px 44px),
+                linear-gradient(#bde78a 0 6px, #8fc965 6px 14px, #679a49 14px);
             border-radius: 0;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.35);
+            clip-path: polygon(0 0,100% 0,100% 75%,86% 75%,86% 100%,76% 100%,76% 75%,54% 75%,54% 100%,44% 100%,44% 75%,20% 75%,20% 100%,10% 100%,10% 75%,0 75%);
+        }
+        body[data-theme="minecraft"] .team-card::after {
+            content: '';
+            position: absolute;
+            bottom: 12px; left: 50%;
+            width: 5px; height: 5px;
+            transform: translateX(-50%);
+            background: var(--team-color, #bde78a);
+            box-shadow: -12px 0 0 #bc9d7d, 12px 0 0 #bc9d7d;
+            pointer-events: none;
         }
 
         .header {
@@ -143,7 +155,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        body[data-theme="minecraft"] .team-name { text-shadow: 3px 3px 0 #171a1c; }
+        body[data-theme="minecraft"] .team-name { text-shadow: 2px 2px 0 #30271f; }
 
         .rank-badge {
             flex-shrink: 0;
@@ -174,17 +186,17 @@
 
         body[data-theme="minecraft"] .rank-badge {
             font-size: 12px;
-            border-radius: 0;
+            border-radius: 8px;
             padding: 9px 11px;
-            background: #59636a;
-            color: #f2f2ed;
-            border: 3px solid #202426;
-            box-shadow: inset 2px 2px 0 rgba(255,255,255,0.22), inset -2px -2px 0 rgba(0,0,0,0.3), 3px 3px 0 rgba(0,0,0,0.35);
-            text-shadow: 2px 2px 0 rgba(0,0,0,0.45);
+            background: #c1dca8;
+            color: #34462c;
+            border: 2px solid #748860;
+            box-shadow: inset 0 3px 0 rgba(255,255,255,0.4), 3px 3px 0 rgba(39,30,25,0.3);
+            text-shadow: none;
         }
-        body[data-theme="minecraft"] .rank-badge.rank-1 { background: #f1c232; color: #fff7ce; border-color: #6f4e00; }
-        body[data-theme="minecraft"] .rank-badge.rank-2 { background: #aeb8bd; color: #ffffff; border-color: #414a4e; }
-        body[data-theme="minecraft"] .rank-badge.rank-3 { background: #b86f32; color: #fff0d6; border-color: #542b13; }
+        body[data-theme="minecraft"] .rank-badge.rank-1 { background: #ffe29a; color: #60461e; border-color: #b99a54; }
+        body[data-theme="minecraft"] .rank-badge.rank-2 { background: #cce9ed; color: #35565e; border-color: #80a9b0; }
+        body[data-theme="minecraft"] .rank-badge.rank-3 { background: #f5c3ab; color: #684333; border-color: #b5866c; }
 
         .score-container {
             width: 100%;
@@ -213,7 +225,7 @@
         }
         body[data-theme="minecraft"] .score {
             color: var(--team-color, #74d04c);
-            text-shadow: 4px 4px 0 #101213, -2px -2px 0 rgba(255,255,255,0.12);
+            text-shadow: 3px 3px 0 #261e19, -1px -1px 0 #261e19, 1px -1px 0 #261e19, -1px 1px 0 #261e19;
         }
 
         .score-unit { font-size: 30px; font-weight: 600; color: #9ca3af; margin-left: 6px; }
@@ -223,8 +235,8 @@
         }
         body[data-theme="minecraft"] .score-unit {
             font-size: 26px;
-            color: #b9c0b6;
-            text-shadow: 2px 2px 0 #171a1c;
+            color: #c8bfb4;
+            text-shadow: 2px 2px 0 #30271f;
         }
     </style>
 </head>
