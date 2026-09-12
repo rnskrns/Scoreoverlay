@@ -250,6 +250,23 @@
         }
         .score-input::-webkit-inner-spin-button, .score-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
+        .add-score-control {
+            display: flex; align-items: center; gap: 4px;
+            background: var(--panel-alt); padding: 4px; border-radius: var(--radius-md);
+            border: 1px solid var(--line);
+        }
+        .add-score-input {
+            width: 72px; padding: 7px 6px; border: none; background: transparent;
+            color: var(--accent); text-align: center; outline: none; font-weight: 700;
+            font-family: var(--font-score);
+        }
+        .add-score-input::-webkit-inner-spin-button, .add-score-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .btn-add-score { background: var(--accent); color: var(--accent-text); padding: 7px 10px; }
+        .btn-add-score:hover { background: var(--accent-hover); }
+        body[data-theme="pixel"] .add-score-control { border: 2px solid var(--line); box-shadow: inset 2px 2px 0 rgba(0,0,0,0.4); }
+        body[data-theme="pixel"] .btn-add-score { border: 2px solid #000; box-shadow: 2px 2px 0 #000; }
+        body[data-theme="pixel"] .btn-add-score:active { transform: translate(2px, 2px); box-shadow: none; }
+
         button { font-family: var(--font-ui); font-size: 14px; font-weight: 700; border: none; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; }
         .btn-score {
             background: #232c3d; color: var(--text); border: 1px solid var(--line);
@@ -465,6 +482,10 @@
                         <button class="btn-score" onclick="adjustScore(${team.id}, 1)">+1</button>
                         <button class="btn-score" onclick="adjustScore(${team.id}, 5)">+5</button>
                     </div>
+                    <div class="add-score-control">
+                        <input type="number" min="1" class="add-score-input" id="add_score_${team.id}" placeholder="+점수" onkeydown="if(event.key === 'Enter'){ event.preventDefault(); addScore(${team.id}); }">
+                        <button class="btn-add-score" onclick="addScore(${team.id})">추가</button>
+                    </div>
                     <button class="btn-delete" onclick="removeTeam(${team.id})" ${teamsData.length <= 2 ? 'disabled' : ''}>삭제</button>
                 `;
                 container.appendChild(div);
@@ -488,6 +509,18 @@
             const input = document.getElementById(`score_${id}`);
             input.value = (parseInt(input.value) || 0) + amount;
             syncData();
+        }
+
+        function addScore(id) {
+            const addInput = document.getElementById(`add_score_${id}`);
+            const amount = parseInt(addInput.value);
+            if (!Number.isFinite(amount) || amount <= 0) {
+                addInput.focus();
+                return;
+            }
+            adjustScore(id, amount);
+            addInput.value = '';
+            addInput.focus();
         }
 
         function updateScore() {
