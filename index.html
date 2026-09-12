@@ -73,6 +73,16 @@
             transition: background 0.2s ease, color 0.2s ease;
         }
         .container { max-width: 720px; margin: 0 auto; }
+        .hidden { display: none !important; }
+        .login-screen { max-width: 460px; margin: 12vh auto 0; }
+        .login-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 28px; }
+        .login-card h1 { margin: 0 0 8px; font-size: 24px; }
+        .login-card p { margin: 0 0 22px; color: var(--text-dim); line-height: 1.55; }
+        .login-row { display: flex; gap: 10px; }
+        .login-row input { flex: 1; min-width: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--panel-alt); color: var(--text); font-size: 16px; }
+        .login-row button { padding: 12px 20px; background: var(--accent); color: var(--accent-text); }
+        .login-error { min-height: 20px; margin-top: 12px; color: var(--danger); font-size: 13px; }
+        .session-name { color: var(--text-dim); font-size: 13px; }
 
         .header-box {
             background: var(--panel);
@@ -276,11 +286,24 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <h1>스코어 컨트롤러</h1>
+            <p>등록된 경기 비밀번호를 입력하세요. 비밀번호마다 서로 다른 스코어가 열립니다.</p>
+            <form class="login-row" id="loginForm">
+                <input type="password" id="passwordInput" placeholder="비밀번호" autocomplete="current-password" required>
+                <button type="submit" id="loginButton">입장</button>
+            </form>
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+
+    <div class="container hidden" id="controllerApp">
         <div class="header-box">
             <div class="header-left">
                 <div class="eyebrow"><span class="live-dot"></span>LIVE CONTROL</div>
                 <h2 class="title-text">스코어 컨트롤러</h2>
+                <div class="session-name" id="sessionName"></div>
             </div>
             <button class="btn-copy" onclick="copyOverlayUrl()">🔗 OBS 오버레이 주소 복사</button>
         </div>
@@ -313,6 +336,48 @@
         ];
         let nextId = 3;
         let currentTheme = 'broadcast';
+        let sessionToken = '';
+        let scoreSheet = '';
+
+        const loginScreen = document.getElementById('loginScreen');
+        const controllerApp = document.getElementById('controllerApp');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const loginButton = document.getElementById('loginButton');
+
+        async function api(payload) {
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if (!response.ok || !data.ok) throw new Error(data.error || '요청에 실패했습니다.');
+            return data;
+        }
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            loginError.textContent = '';
+            loginButton.disabled = true;
+            loginButton.textContent = '확인 중...';
+            try {
+                const result = await api({ action: 'login', password: document.getElementById('passwordInput').value });
+                sessionToken = result.token;
+                scoreSheet = result.sheet;
+                teamsData = Array.isArray(result.teams) && result.teams.length ? result.teams : teamsData;
+                nextId = Math.max(0, ...teamsData.map(t => Number(t.id) || 0)) + 1;
+                document.getElementById('sessionName').textContent = result.name || '';
+                loginScreen.classList.add('hidden');
+                controllerApp.classList.remove('hidden');
+                renderControls();
+            } catch (error) {
+                loginError.textContent = error.message === 'Invalid password' ? '비밀번호가 올바르지 않습니다.' : error.message;
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = '입장';
+            }
+        });
 
         function setTheme(theme) {
             currentTheme = theme;
@@ -324,8 +389,8 @@
             // 현재 접속 중인 URL 경로를 기준으로 overlay.html 주소 자동 생성 (선택한 테마 반영)
             const currentUrl = window.location.href.split('?')[0];
             const basePath = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-            let overlayUrl = basePath + '/overlay.html';
-            if (currentTheme === 'pixel') overlayUrl += '?theme=pixel';
+            const query = new URLSearchParams({ sheet: scoreSheet, theme: currentTheme });
+            const overlayUrl = basePath + '/overlay.html?' + query.toString();
 
             navigator.clipboard.writeText(overlayUrl).then(() => {
                 alert("OBS 오버레이용 주소가 복사되었습니다!\nOBS 브라우저 소스 URL에 붙여넣기 하세요.");
@@ -414,11 +479,7 @@
             const originalText = "업데이트";
             btn.innerText = "업데이트 중..."; btn.style.backgroundColor = "#5b6272";
 
-            fetch(WEB_APP_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(exportData)
-            })
+            api({ action: 'update', token: sessionToken, teams: exportData })
             .then(() => {
                 btn.innerText = "업데이트 완료! ✔️"; btn.style.backgroundColor = "#20c997";
                 setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = "var(--accent)"; }, 1500);
@@ -429,7 +490,7 @@
             });
         }
 
-        renderControls();
+        document.getElementById('passwordInput').focus();
     </script>
 </body>
 </html>

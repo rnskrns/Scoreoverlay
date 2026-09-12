@@ -146,6 +146,7 @@
         // 예) https://.../overlay.html?theme=pixel   (기본값은 디자인1)
         const params = new URLSearchParams(window.location.search);
         document.body.dataset.theme = params.get('theme') === 'pixel' ? 'pixel' : 'broadcast';
+        const scoreSheet = params.get('sheet') || '';
 
         const scoreboardEl = document.getElementById('scoreboard');
 
@@ -177,8 +178,11 @@
 
         async function fetchScoreData() {
             try {
-                const response = await fetch(WEB_APP_URL);
-                let rawTeams = await response.json();
+                if (!scoreSheet) throw new Error('시트 번호가 없습니다. 컨트롤러에서 주소를 다시 복사하세요.');
+                const response = await fetch(WEB_APP_URL + '?sheet=' + encodeURIComponent(scoreSheet));
+                const result = await response.json();
+                if (!result.ok) throw new Error(result.error || '데이터를 불러오지 못했습니다.');
+                let rawTeams = result.teams;
 
                 rawTeams.sort((a, b) => b.score - a.score);
 
