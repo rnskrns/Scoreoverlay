@@ -18,7 +18,7 @@
             --font-score: 'Press Start 2P', 'Pretendard Variable', sans-serif;
             --card-radius: 24px;
             --score-size: 40px;
-            --name-size: 22px;
+            --name-size: 34px;
         }
 
         * { box-sizing: border-box; }
@@ -123,8 +123,20 @@
         body[data-theme="pixel"] .rank-badge.rank-2 { background: #d7d7d7; color: #333; }
         body[data-theme="pixel"] .rank-badge.rank-3 { background: #c07a3e; color: #2e1a0a; }
 
-        .score-container { text-align: center; }
-        body[data-theme="pixel"] .score-container { text-align: center; }
+        .score-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            text-align: center;
+        }
+        body[data-theme="pixel"] .score-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            text-align: center;
+        }
 
         .score {
             font-family: var(--font-score);
@@ -135,7 +147,7 @@
         body[data-theme="pixel"] .score { color: var(--team-color, #38bdf8); }
 
         .score-unit { font-size: 30px; font-weight: 600; color: #9ca3af; margin-left: 6px; }
-        body[data-theme="pixel"] .score-unit { font-size: 21px; color: #9ca3af; }
+        body[data-theme="pixel"] .score-unit { font-size: 30px; color: #9ca3af; }
     </style>
 </head>
 <body>
