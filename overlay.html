@@ -16,6 +16,12 @@
         }
         body[data-theme="pixel"] {
             --font-score: 'Press Start 2P', 'Pretendard Variable', sans-serif;
+            --card-radius: 24px;
+            --score-size: 65px;
+            --name-size: 31px;
+        }
+        body[data-theme="minecraft"] {
+            --font-score: 'Press Start 2P', 'Pretendard Variable', sans-serif;
             --card-radius: 0px;
             --score-size: 65px;
             --name-size: 31px;
@@ -63,8 +69,24 @@
             background: var(--team-color, #888);
         }
 
-        /* Design 2: Minecraft tournament-inspired block HUD */
+        /* Design 2: original pixel card */
         body[data-theme="pixel"] .team-card {
+            background: rgba(10, 12, 18, 0.95);
+            color: #f2f2fb;
+            border: none;
+            outline: none;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.35);
+            width: 320px;
+            padding: 30px 27px 27px;
+        }
+        body[data-theme="pixel"] .team-card::before {
+            display: block;
+            height: 9px;
+            border-radius: var(--card-radius) var(--card-radius) 0 0;
+        }
+
+        /* Design 3: Minecraft tournament-inspired block HUD */
+        body[data-theme="minecraft"] .team-card {
             background-color: rgba(48, 54, 58, 0.97);
             background-image:
                 linear-gradient(90deg, rgba(255,255,255,0.035) 50%, transparent 50%),
@@ -82,7 +104,7 @@
             padding: 32px 27px 25px;
             image-rendering: pixelated;
         }
-        body[data-theme="pixel"] .team-card::before {
+        body[data-theme="minecraft"] .team-card::before {
             display: block;
             top: 4px; left: 4px; right: 4px;
             height: 10px;
@@ -97,7 +119,8 @@
             gap: 10px;
             margin-bottom: 24px;
         }
-        body[data-theme="pixel"] .header {
+        body[data-theme="pixel"] .header,
+        body[data-theme="minecraft"] .header {
             margin-bottom: 18px;
             align-items: center;
             flex-wrap: nowrap;
@@ -110,7 +133,8 @@
             line-height: 1.3;
             padding-top: 2px;
         }
-        body[data-theme="pixel"] .team-name {
+        body[data-theme="pixel"] .team-name,
+        body[data-theme="minecraft"] .team-name {
             font-family: var(--font-score);
             line-height: 1;
             padding-top: 0;
@@ -118,8 +142,8 @@
             min-width: 0;
             overflow: hidden;
             text-overflow: ellipsis;
-            text-shadow: 3px 3px 0 #171a1c;
         }
+        body[data-theme="minecraft"] .team-name { text-shadow: 3px 3px 0 #171a1c; }
 
         .rank-badge {
             flex-shrink: 0;
@@ -139,6 +163,16 @@
         .rank-badge.rank-3 { background: linear-gradient(120deg, #e3a874, #b06f3d); color: #2e1a0a; }
 
         body[data-theme="pixel"] .rank-badge {
+            font-size: 13px; border-radius: 7px 19px 19px 7px; padding: 8px 15px 8px 12px;
+            background: #2a2c54; color: #f2f2fb;
+            border: none;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.35);
+        }
+        body[data-theme="pixel"] .rank-badge.rank-1 { background: #e8c341; color: #4a3a00; }
+        body[data-theme="pixel"] .rank-badge.rank-2 { background: #d7d7d7; color: #333; }
+        body[data-theme="pixel"] .rank-badge.rank-3 { background: #c07a3e; color: #2e1a0a; }
+
+        body[data-theme="minecraft"] .rank-badge {
             font-size: 12px;
             border-radius: 0;
             padding: 9px 11px;
@@ -148,9 +182,9 @@
             box-shadow: inset 2px 2px 0 rgba(255,255,255,0.22), inset -2px -2px 0 rgba(0,0,0,0.3), 3px 3px 0 rgba(0,0,0,0.35);
             text-shadow: 2px 2px 0 rgba(0,0,0,0.45);
         }
-        body[data-theme="pixel"] .rank-badge.rank-1 { background: #f1c232; color: #fff7ce; border-color: #6f4e00; }
-        body[data-theme="pixel"] .rank-badge.rank-2 { background: #aeb8bd; color: #ffffff; border-color: #414a4e; }
-        body[data-theme="pixel"] .rank-badge.rank-3 { background: #b86f32; color: #fff0d6; border-color: #542b13; }
+        body[data-theme="minecraft"] .rank-badge.rank-1 { background: #f1c232; color: #fff7ce; border-color: #6f4e00; }
+        body[data-theme="minecraft"] .rank-badge.rank-2 { background: #aeb8bd; color: #ffffff; border-color: #414a4e; }
+        body[data-theme="minecraft"] .rank-badge.rank-3 { background: #b86f32; color: #fff0d6; border-color: #542b13; }
 
         .score-container {
             width: 100%;
@@ -159,7 +193,8 @@
             align-items: baseline;
             text-align: center;
         }
-        body[data-theme="pixel"] .score-container {
+        body[data-theme="pixel"] .score-container,
+        body[data-theme="minecraft"] .score-container {
             width: 100%;
             display: flex;
             justify-content: center;
@@ -174,12 +209,19 @@
             line-height: 1;
         }
         body[data-theme="pixel"] .score {
+            color: var(--team-color, #38bdf8);
+        }
+        body[data-theme="minecraft"] .score {
             color: var(--team-color, #74d04c);
             text-shadow: 4px 4px 0 #101213, -2px -2px 0 rgba(255,255,255,0.12);
         }
 
         .score-unit { font-size: 30px; font-weight: 600; color: #9ca3af; margin-left: 6px; }
         body[data-theme="pixel"] .score-unit {
+            font-size: 26px;
+            color: #9ca3af;
+        }
+        body[data-theme="minecraft"] .score-unit {
             font-size: 26px;
             color: #b9c0b6;
             text-shadow: 2px 2px 0 #171a1c;
@@ -191,10 +233,10 @@
     <div class="scoreboard" id="scoreboard"></div>
 
     <script>
-        // 디자인 선택: 주소 끝에 ?theme=pixel 를 붙이면 디자인2(픽셀) 스타일로 표시됩니다.
-        // 예) https://.../overlay.html?theme=pixel   (기본값은 디자인1)
+        // theme=broadcast(베이직), pixel(픽셀), minecraft(마인크래프트)
         const params = new URLSearchParams(window.location.search);
-        document.body.dataset.theme = params.get('theme') === 'pixel' ? 'pixel' : 'broadcast';
+        const requestedTheme = params.get('theme');
+        document.body.dataset.theme = ['pixel', 'minecraft'].includes(requestedTheme) ? requestedTheme : 'broadcast';
         const scoreSheet = params.get('sheet') || '';
 
         const scoreboardEl = document.getElementById('scoreboard');
